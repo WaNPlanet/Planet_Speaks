@@ -73,6 +73,98 @@
             </p>
         </section>
     </main>
+
+    <section class="container p-0">
+          <h3> Comment Section</h3> 
+          <div class="mt-4">
+            <!-- Comment Form -->
+            <div class="card p-3">
+                <div class="mb-3">
+                    <label for="commentInput" class="form-label">Leave a comment</label>
+                    <textarea class="form-control" id="commentInput" rows="3" placeholder="Write your comment here..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="addComment()">Post Comment</button>
+            </div>
+        
+            <!-- Comments List -->
+            <ul class="list-group mt-3" id="commentList">
+                <!-- Dynamic comments will be added here -->
+            </ul>
+        </div>
+        
+    </section>
+
+       <!-- <script src="main.js"></script> -->
+       <script>
+        function addComment(parentElement = null, text = null) {
+            let commentText;
+    
+            // If a reply text is provided, use that, otherwise get the main input field
+            if (text) {
+                commentText = text.trim();
+            } else {
+                let commentInput = document.getElementById("commentInput");
+                commentText = commentInput.value.trim();
+            }
+    
+            if (commentText !== "") {
+                let commentList = parentElement ? parentElement.querySelector(".replies") : document.getElementById("commentList");
+    
+                // Create new comment element
+                let listItem = document.createElement("li");
+                listItem.className = "list-group-item";
+                listItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>${commentText}</span>
+                        <div>
+                            <button class="btn btn-sm btn-secondary" onclick="replyToComment(this)">Reply</button>
+                            <button class="btn btn-sm btn-danger" onclick="this.closest('li').remove()">Delete</button>
+                        </div>
+                    </div>
+                    <ul class="list-group ms-4 replies"></ul> <!-- Nested Replies -->
+                `;
+    
+                commentList.appendChild(listItem);
+    
+                // Clear main input field only if adding a top-level comment
+                if (!parentElement) {
+                    document.getElementById("commentInput").value = "";
+                }
+            } else {
+                alert("Comment cannot be empty!");
+            }
+        }
+    
+        function replyToComment(button) {
+            let parentComment = button.closest("li");
+    
+            // Check if a reply input already exists
+            if (parentComment.querySelector(".reply-box")) return;
+    
+            let replyInput = document.createElement("textarea");
+            replyInput.className = "form-control mt-2 reply-box";
+            replyInput.rows = 2;
+            replyInput.placeholder = "Write a reply...";
+    
+            let submitReplyBtn = document.createElement("button");
+            submitReplyBtn.className = "btn btn-sm btn-primary mt-2";
+            submitReplyBtn.textContent = "Reply";
+            submitReplyBtn.onclick = function () {
+                let replyText = replyInput.value.trim();
+                if (replyText !== "") {
+                    addComment(parentComment, replyText);
+                    replyInput.remove();
+                    submitReplyBtn.remove();
+                } else {
+                    alert("Reply cannot be empty!");
+                }
+            };
+    
+            parentComment.appendChild(replyInput);
+            parentComment.appendChild(submitReplyBtn);
+        }
+    </script>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
 </html>
